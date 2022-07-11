@@ -81,8 +81,14 @@ router.get("/hook/:id", async (req, res) => {
     return
   }
 
-  exec("sh deploy.sh", {
+  const { PATH, HOME } = process.env
+
+  exec(`sh deploy.sh ${id}`, {
     cwd: process.env.DIST_DIRECTORY,
+    env: {
+      PATH,
+      HOME,
+    }
   }, (err, stdout, stderr) => {
     console.log(stdout)
     console.log(stderr)
