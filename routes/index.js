@@ -69,9 +69,7 @@ router.get("/hook/:id", async (req, res) => {
 
   const file = fs.createWriteStream(filename);
 
-  const stream = readableStream.pipe(file);
-
-  await new Promise((resolve, reject) => stream.on("finish", resolve).on("error", reject))
+  await new Promise((resolve, reject) => readableStream.on("close", resolve).on("error", reject).pipe(file))
 
   const shellname = `${process.env.DIST_DIRECTORY}/deploy.sh`
 
@@ -83,7 +81,9 @@ router.get("/hook/:id", async (req, res) => {
     return
   }
 
-  exec(`sh ${shellname}`, (err, stdout, stderr) => {
+  exec("sh deploy.sh", {
+    cwd: process.env.DIST_DIRECTORY,
+  }, (err, stdout, stderr) => {
     console.log(stdout)
     console.log(stderr)
   })
