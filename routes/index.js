@@ -12,7 +12,15 @@ const s3 = new S3({
 router.get("/hook/:id", async (req, res) => {
   const header = req.headers.authorization;
 
-  const accessToken = header?.replace("Bearer ", "")
+  if (!header) {
+    res.status(401).json({
+      message: "유효하지 않은 인증정보입니다."
+    })
+
+    return
+  }
+
+  const accessToken = header.replace("Bearer ", "")
 
   if (accessToken !== process.env.ADMIN_TOKEN) {
     res.status(401).json({
